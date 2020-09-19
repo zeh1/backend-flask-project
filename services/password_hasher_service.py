@@ -1,5 +1,5 @@
 import bcrypt
-from encode_decode import EncodeDecodeService
+from encode_decode_service import EncodeDecodeService
 
 
 
@@ -18,17 +18,4 @@ class PasswordHasherService:
         h = EncodeDecodeService.decode(h)
         return h
         # returns a string
-#
-
-
-
-
-
-# This class is responsible for checking if passwords match
-
-class PasswordCheckerService:
-    def check(password, stored_password):
-        password = EncodeDecodeService.encode(password)
-        stored_password = EncodeDecodeService.encode(stored_password)
-        return bcrypt.checkpw(password, stored_password)
 #

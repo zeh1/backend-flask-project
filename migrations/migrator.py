@@ -1,4 +1,4 @@
-from connection import Connection
+from query_executor_service import QueryExecutorService
 import sqlite3
 
 create_users_table = '''
@@ -67,8 +67,8 @@ queries = [
 
 for query in queries:
     try:
-        conn = Connection()
-        res = conn.execute(query)
+        i = QueryExecutorService()
+        res = i.execute(query)
     except sqlite3.OperationalError as e:
         print(f'ERROR: {e}')
 #
