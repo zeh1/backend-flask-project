@@ -32,13 +32,6 @@ class SignerService:
 
     def get(self):
         return self.b64_encoded_header_as_string + '.' + self.b64_encoded_payload_as_string + '.' + self.__signature()
-
-    def check_signature(self, jwt):
-        x = jwt.split('.')
-        arg = x[0] + '.' + x[1]
-        supplied_sig = x[2]
-        proper_sig = hmac.new(self.secret, arg).hexdigest().encode('base64')
-        return supplied_sig == proper_sig
 #
 
 
