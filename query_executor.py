@@ -1,8 +1,18 @@
 import sqlite3
 
+
+
+
+
 URL = "Z:\sqlite\db\sqlitedb"
 
-class Connection:
+
+
+
+
+# This class is responsible for executing SQL queries
+
+class QueryExecutorService:
     def __init__(self, url = URL):
         self.connection = sqlite3.connect(url)
 
@@ -12,12 +22,6 @@ class Connection:
     def execute(self, query):
         cursor = self.__get_cursor()
         cursor.execute(query)
-        self.connection.commit()
-        return cursor.fetchall()
-
-    def execute_many(self, query):
-        cursor = self.__get_cursor()
-        cursor.executescript(query)
         self.connection.commit()
         return cursor.fetchall()
 

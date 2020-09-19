@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import request
-from query_builder import QueryBuilder
+from encode_decode import EncodeDecodeService
+# from query_builder import QueryBuilder
 
 app = Flask(__name__)
 
@@ -12,3 +13,8 @@ def posts():
         pass
 #
 
+@app.route('/')
+def test():
+    data = EncodeDecodeService.to_b64_string('asd').encode('utf-8')
+    res = EncodeDecodeService.b64_to_string(data)
+    return res
