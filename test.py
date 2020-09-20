@@ -13,11 +13,12 @@ def a():
 a()()()
 '''
 
-def f():
-    if False:
-        return 1
-    else:
-        pass
-    return None
+from services.query_executor_service import QueryExecutorService as q
 
-print( f() )
+conn = q()
+
+query = '''
+    update test2 set id = 7 where id = 5;
+'''
+
+print( conn.execute(query) )

@@ -18,7 +18,6 @@ class QueryBuilderService:
 
 
     def get_posts(self, offset = None):
-        query = None
         if offset != None:
             query = '''
                 select * from posts
@@ -213,20 +212,18 @@ class QueryBuilderService:
         # check if session exists, retrieve email from sessions db
         # proceed to change pw
 
-        '''
         query1 = '''
-            select email from resets
-            where session_id = {uuid};
-        '''.format(uuid = uuid)
-        # may throw invalid session exception
-        # get email
-
-        # case/if, subqueries/results, joins
-        query2 = '''
             update users set password = {password}
-            where email = {email};
-        '''.format(password = password, email = email)
+            where email = (
+                select email from resets
+                where session_id = {uuid}
+            );
+        '''.format(password = password, uuid = uuid)
+
+        query2 = '''
+
         '''
+        # may throw invalid session exception
 
 
 
