@@ -22,3 +22,11 @@ class IncorrectPasswordException(Exception):
     def __init__(self):
         super().__init__("Password is incorrect")
 
+class InvalidSearchException(Exception):
+    def __init__(self):
+        super().__init__("Invalid search terms")
+
+class InvalidSessionException(Exception):
+    def __init__(self):
+        super().__init__("Invalid session")
+

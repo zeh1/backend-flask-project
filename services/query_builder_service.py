@@ -141,7 +141,7 @@ class QueryBuilderService:
 
 
 
-    def recover_attempt(self, email):
+    def start_password_reset(self, email):
         queries = None
         
         query1 = '''
@@ -197,13 +197,39 @@ class QueryBuilderService:
 
 
     def search(self, search):
-        pass
+        query = None
+        if search == None or search == "":
+            raise __custom_exceptions.InvalidSearchException()
+        query = '''
+            select post_id, post_title, post_body from posts
+            where post_title like '%{search}%'
+            or post_body like '%{search}%';
+        '''.format(search = search)
+        return [query]
 
 
 
-    def fetch_password_reset_attempt(self, uuid):
-        pass
+    def consume_reset_password_attempt(self, uuid, new_pass):
+        # check if session exists, retrieve email from sessions db
+        # proceed to change pw
 
-    def fetch_email_validate_attempt(self, uuid):
+        '''
+        query1 = '''
+            select email from resets
+            where session_id = {uuid};
+        '''.format(uuid = uuid)
+        # may throw invalid session exception
+        # get email
+
+        # case/if, subqueries/results, joins
+        query2 = '''
+            update users set password = {password}
+            where email = {email};
+        '''.format(password = password, email = email)
+        '''
+
+
+
+    def consume_verify_email_attempt(self, uuid):
         pass
 #
