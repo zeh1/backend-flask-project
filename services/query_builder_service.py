@@ -1,5 +1,6 @@
 from signature_checker_service import SignatureCheckerService
 import custom_exceptions
+from jwt_deconstructor_service import JwtDeconstructorService
 
 
 
@@ -8,10 +9,10 @@ import custom_exceptions
 class QueryBuilderService:
 
 
+
     def __init__(self, jwt = None):
         self.jwt = jwt
         
-
 
 
     def get_posts(self, offset = None):
@@ -34,13 +35,27 @@ class QueryBuilderService:
 
 
     def insert_post(self, title, body):
-        is_authorized = SignatureCheckerService.check(self.jwt)
-        if not is_authorized:
+
+        query = None
+
+        if self.jwt == None or not SignatureCheckerService.check(self.jwt):
             raise custom_exceptions.UserNotAuthorizedException()
         else:
-            query = '''
+            user_id = JwtDeconstructorService(self.jwt)['user_id']
+            
+            query1 = '''
+                insert into posts(post_title, post_body, user_id)
+                values({post_title}, {post_body}, {user_id});
+            '''.format(post_title = title, post_body = body, user_id = user_id)
+            
+            query2 = '''
+                update users set post_count = post_count + 1
+                where user_id = {user_id};
+            '''.format(user_id = user_id)
 
-            '''
+        return query
+
+
 
     def fetch_get_request_to_replies(self):
         pass
