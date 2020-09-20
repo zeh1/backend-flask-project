@@ -1,32 +1,12 @@
-from connection import Connection
-from signer import Signer
-from hasher import Hasher
-from datetime import date
+
+
+
 
 class Authorizer:
     def __init__(self):
         pass
 
     def get_jwt(self, username, raw_password):
-        conn = Connection()
-        hasher = Hasher(raw_password)
-
-        query = '''
-            select password from users where username = {username};
-        '''.format(username = username)
-        res = Connection().execute(query)
-        if len(res) == 0:
-            raise "none found"
-        else:
-            res = res[0][0]
-        if !(hasher.check_pw(raw_password, res)):
-            raise "wrong pass"
-
-        query = '''
-            select user_id, username, email, join_date, post_count from users
-            where username = {username};
-        '''.format(username = username)
-        res = Connection().execute(query)
         payload = {
             "user_id": res[0][0],
             "username": res[0][1],
