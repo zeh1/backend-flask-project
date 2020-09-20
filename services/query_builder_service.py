@@ -1,5 +1,5 @@
 from signature_checker_service import SignatureCheckerService
-import custom_exceptions
+import __custom_exceptions
 from jwt_deconstructor_service import JwtDeconstructorService
 from password_hasher_service import PasswordHasherService
 import uuid
@@ -41,7 +41,7 @@ class QueryBuilderService:
         queries = None
 
         if self.jwt == None or not SignatureCheckerService.check(self.jwt):
-            raise custom_exceptions.UserNotAuthorizedException()
+            raise __custom_exceptions.UserNotAuthorizedException()
         else:
             user_id = JwtDeconstructorService(self.jwt)['user_id']
             
@@ -74,7 +74,7 @@ class QueryBuilderService:
         query = None
 
         if self.jwt == None or not SignatureCheckerService.check(self.jwt):
-            raise custom_exceptions.UserNotAuthorizedException()
+            raise __custom_exceptions.UserNotAuthorizedException()
         else:
             user_id = JwtDeconstructorService(self.jwt)['user_id']
             

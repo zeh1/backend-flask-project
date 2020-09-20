@@ -2,7 +2,7 @@ from query_executor_service import QueryExecutorService
 import sqlite3
 
 create_users_table = '''
-create table user (
+create table users (
     user_id integer primary key autoincrement,
     username varchar(16) not null unique,
     email varchar(320) not null unique,

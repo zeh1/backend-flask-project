@@ -1,6 +1,6 @@
 import hmac
 from encode_decode_service import EncodeDecodeService
-from secrets import SECRET
+from __secrets import SECRET
 
 
 

@@ -13,6 +13,9 @@ def a():
 a()()()
 '''
 
-import uuid
+import services.__custom_exceptions
 
-print( uuid.uuid4().hex )
+try:
+    raise services.__custom_exceptions.UserNotFoundException()
+except Exception as e:
+    print(e)
