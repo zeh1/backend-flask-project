@@ -87,7 +87,7 @@ class QueryBuilderService:
 
 
 
-    def signin(self, username, password):
+    def signin_attempt(self, username, password):
         query = '''
             select user_id, username, email, join_date, post_count from users
             where username = {username} and email = {email};
@@ -97,7 +97,9 @@ class QueryBuilderService:
 
 
 
-    def signup(self, email, username, password):
+    def signup_attempt(self, email, username, password):
+        queries = None
+
         hashed_pw = PasswordHasherService(password).get()
         query1 = '''
             insert into users(username, email, password)
@@ -105,26 +107,99 @@ class QueryBuilderService:
         '''.format(username = username, email = email, password = hashed_pw)
         # leads to: UserAlreadyExistsException
 
+        session_id = uuid.uuid4().hex
         query2 = '''
-            select user_id from users where email = {email};
+            insert into verifications(session_id, email)
+            values({session_id}, {email});
+        '''.format(session_id = session_id, email = email)
+        # create verification session
+
+        query3 = '''
+            select session_id from verifications
+            where email = {email};
         '''.format(email = email)
+        # get session id from here, in order to send email
+
+        # originally i wanted this class to just return a single query
+        # for each request but it turned into spaghetti code when
+        # it turned out to be more complicated because of sql
+        # using multiple queries, and needing to pass data in between queries
+        # also there were inefficiencies in the sql data model
+        # for the future: prefer natural primary keys over generated ones
+        
+        # learning points:
+        # do not try to implement a query builder, think of another way
+        # prefer natural keys
+        # try using table joins?
+        # understand python upper directory imports...
+        # use 3rd party sql libs
+        # consider document db for easier implementation
+
+        queries = [query1, query2, query3]
+
+        return queries
+
+
+
+    def recover_attempt(self, email):
+        queries = None
+        
+        query1 = '''
+            select email from users
+            where email = {email};
+        '''.format(email = email)
+        # check if user exists
+        # may return UserNotFoundException
 
         session_id = uuid.uuid4().hex
+        query2 = '''
+            insert into resets(session_id, email)
+            values({session_id}, {email});
+        '''.format(session_id = session_id, email = email)
+        # create reset session
+
         query3 = '''
-            insert into verifications(session_id, user_id)
-            values({session_id}, {user_id});
-        '''.format(session_id = session_id, user_id = user_id)
+            select session_id from resets
+            where email = {email};
+        '''.format(email = email)
+        # retrieve session id in order to send email
+
+        queries = [query1, query2, query3]
+
+        return queries
 
 
 
-    def fetch_recover_attempt(self, email):
+    def password_change_attempt(self, password, new_pass):
+        
+        queries = None
+
+        if self.jwt == None or not SignatureCheckerService.check(self.jwt):
+            raise __custom_exceptions.UserNotAuthorizedException()
+        else:
+            username = JwtDeconstructorService(self.jwt)['username']
+
+            query1 = '''
+                select password from users
+                where password = {password} and username = {username}
+            '''.format(password = password, username = username)
+            # may result in IncorrectPasswordException
+
+            query2 = '''
+                update users set password = {new_pass}
+                where username = {username}
+            '''.format(new_pass = new_pass, username = username)
+
+            queries = [query1, query2]
+
+        return queries
+
+
+
+    def search(self, search):
         pass
 
-    def fetch_password_change_attempt(self, password):
-        pass
 
-    def fetch_search_query(self, search):
-        pass
 
     def fetch_password_reset_attempt(self, uuid):
         pass

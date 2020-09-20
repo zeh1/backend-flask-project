@@ -18,3 +18,7 @@ class UserAlreadyExistsException(Exception):
     def __init__(self):
         super().__init__("User already exists")
 
+class IncorrectPasswordException(Exception):
+    def __init__(self):
+        super().__init__("Password is incorrect")
+

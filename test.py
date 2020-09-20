@@ -13,9 +13,11 @@ def a():
 a()()()
 '''
 
-import services.__custom_exceptions
+def f():
+    if False:
+        return 1
+    else:
+        pass
+    return None
 
-try:
-    raise services.__custom_exceptions.UserNotFoundException()
-except Exception as e:
-    print(e)
+print( f() )
