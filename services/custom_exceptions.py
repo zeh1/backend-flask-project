@@ -14,3 +14,7 @@ class NoJwtSuppliedException(Exception):
     def __init__(self):
         super().__init__("No jwt supplied")
 
+class UserAlreadyExistsException(Exception):
+    def __init__(self):
+        super().__init__("User already exists")
+

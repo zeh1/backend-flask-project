@@ -1,5 +1,4 @@
-
-
+'''
 def a():
     x = 1
     def b():
@@ -12,3 +11,8 @@ def a():
     return b
 
 a()()()
+'''
+
+import uuid
+
+print( uuid.uuid4().hex )

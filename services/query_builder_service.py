@@ -1,6 +1,8 @@
 from signature_checker_service import SignatureCheckerService
 import custom_exceptions
 from jwt_deconstructor_service import JwtDeconstructorService
+from password_hasher_service import PasswordHasherService
+import uuid
 
 
 
@@ -30,13 +32,13 @@ class QueryBuilderService:
                 order by post_date asc
                 limit 15
             '''
-        return query
+        return [query]
 
 
 
     def insert_post(self, title, body):
 
-        query = None
+        queries = None
 
         if self.jwt == None or not SignatureCheckerService.check(self.jwt):
             raise custom_exceptions.UserNotAuthorizedException()
@@ -53,21 +55,67 @@ class QueryBuilderService:
                 where user_id = {user_id};
             '''.format(user_id = user_id)
 
-        return query
+        queries = [query1, query2]
+
+        return queries
 
 
 
-    def fetch_get_request_to_replies(self):
-        pass
+    def get_replies(self):
+        return ['''
+            select * from replies
+            order by reply_date asc
+            limit 15;
+        ''']
 
-    def fetch_post_request_to_replies(self, post_id, reply_body):
-        pass
 
-    def fetch_signin_attempt(self, password):
-        pass
 
-    def fetch_signup_attempt(self, email, username, password):
-        pass
+    def insert_reply(self, post_id, reply_body):
+        query = None
+
+        if self.jwt == None or not SignatureCheckerService.check(self.jwt):
+            raise custom_exceptions.UserNotAuthorizedException()
+        else:
+            user_id = JwtDeconstructorService(self.jwt)['user_id']
+            
+            query = '''
+                insert into replies(reply_body, post_id, user_id)
+                values({reply_body}, {post_id}, {user_id});
+            '''.format(reply_body = reply_body, post_id = post_id, user_id = user_id)
+
+        return [query]
+
+
+
+    def signin(self, username, password):
+        query = '''
+            select user_id, username, email, join_date, post_count from users
+            where username = {username} and email = {email};
+        '''.format(username = username, email = email)
+        # leads to: UserNotFoundException and IncorrectCredentialsException
+        return [query]
+
+
+
+    def signup(self, email, username, password):
+        hashed_pw = PasswordHasherService(password).get()
+        query1 = '''
+            insert into users(username, email, password)
+            values({username}, {email}, {password});
+        '''.format(username = username, email = email, password = hashed_pw)
+        # leads to: UserAlreadyExistsException
+
+        query2 = '''
+            select user_id from users where email = {email};
+        '''.format(email = email)
+
+        session_id = uuid.uuid4().hex
+        query3 = '''
+            insert into verifications(session_id, user_id)
+            values({session_id}, {user_id});
+        '''.format(session_id = session_id, user_id = user_id)
+
+
 
     def fetch_recover_attempt(self, email):
         pass
