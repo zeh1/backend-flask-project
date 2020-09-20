@@ -1,8 +1,20 @@
-class QueryBuilder:
+from signature_checker_service import SignatureCheckerService
+import custom_exceptions
+
+
+
+
+
+class QueryBuilderService:
+
+
     def __init__(self, jwt = None):
         self.jwt = jwt
+        
 
-    def fetch_get_request_to_posts(self, offset = None):
+
+
+    def get_posts(self, offset = None):
         query = None
         if offset != None:
             query = '''
@@ -19,8 +31,16 @@ class QueryBuilder:
             '''
         return query
 
-    def fetch_post_request_to_posts(self, title, body):
-        
+
+
+    def insert_post(self, title, body):
+        is_authorized = SignatureCheckerService.check(self.jwt)
+        if not is_authorized:
+            raise custom_exceptions.UserNotAuthorizedException()
+        else:
+            query = '''
+
+            '''
 
     def fetch_get_request_to_replies(self):
         pass

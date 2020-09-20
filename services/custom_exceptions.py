@@ -5,3 +5,8 @@ class UserNotFoundException(Exception):
 class PasswordIncorrectException(Exception):
     def __init__(self):
         super().__init__("Wrong password")
+
+class UserNotAuthorizedException(Exception):
+    def __init__(self):
+        super().__init__("Not authorized")
+
