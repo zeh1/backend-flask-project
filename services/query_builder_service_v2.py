@@ -67,12 +67,13 @@ class QueryBuilderService:
     # requires a processed (hashed) password
     def login_attempt(username, password):
         query = '''
-            select user_id, username, email, join_date, post_count from users
+            select user_id, username, email, join_date, post_count, is_verified from users
             where username = {username} and email = {email};
         '''.format(username = username, email = email)
 
         return [query]
         # need to handle exceptions: UserNotFoundException, IncorrectCredentialsException
+        # and UserNotVerifiedException
 
 
 
@@ -174,4 +175,12 @@ class QueryBuilderService:
 
 
     def consume_verify_email_attempt(_uuid):
-        pass
+        update_verification_status = '''
+            update users set is_verified = 1;
+        '''
+
+        consume_session = '''
+            delete from verifications where session_id = {session_id};
+        '''.format(session_id = _uuid)
+
+        return [update_verification_status, consume_session]
