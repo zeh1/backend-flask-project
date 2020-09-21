@@ -8,7 +8,7 @@ from services.jwt_deconstructor_service import JwtDeconstructorService as j
 from services.password_checker_service import PasswordCheckerService as c
 from services.jwt_fetcher_service import JwtFetcherService as f
 
-from services.__custom_exceptions import UserNotFoundException, PasswordIncorrectException
+# from services.__custom_exceptions import UserNotFoundException, PasswordIncorrectException
 
 app = Flask(__name__)
 
@@ -153,3 +153,43 @@ def login():
     except Exception as e:
         return str(e)
 #
+
+
+
+
+
+@app.route('/auth/signup', methods=['POST'])
+def signup():
+    username = request.get_json()["username"]
+    email = request.get_json()["email"]
+    password = request.get_json()["password"]
+
+    queries = q.signup_attempt(email, username, password)
+
+    for query in queries:
+        print(query)
+
+    return "hi"
+# TODO: refactor, and add error handling
+
+
+
+
+
+@app.route('/auth/reset_pw', methods=['POST'])
+def reset():
+    email = request.get_json()["email"]
+    queries = q.password_reset_attempt(email)
+    for query in queries:
+        print(query)
+    
+    return "hi"
+#
+
+
+
+
+
+@app.route('/auth/change_pw', methods=['POST'])
+def change():
+    
