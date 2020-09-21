@@ -12,7 +12,10 @@ app = Flask(__name__)
 def posts():
     if request.method == 'GET':
         offset = request.args.get('offset')
-        return offset
+        if offset == None:
+            return "None"
+        else:
+            return offset
 #
 
 

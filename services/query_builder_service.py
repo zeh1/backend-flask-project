@@ -1,5 +1,5 @@
 import uuid
-from password_hasher_service import PasswordHasherService
+from .password_hasher_service import PasswordHasherService
 
 
 
