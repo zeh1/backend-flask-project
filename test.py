@@ -88,8 +88,10 @@ for entry in queries:
     print( e().execute(entry) )
 '''
 
+'''
 session = '7508a72038764630aa1c238b4b732f25'
 queries = q.consume_verify_email_attempt(session)
 for entry in queries:
     # print(entry)
     print(e().execute(entry))
+'''
