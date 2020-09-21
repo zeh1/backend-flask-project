@@ -1,5 +1,5 @@
 import uuid
-
+from password_hasher_service import PasswordHasherService
 
 
 
@@ -121,5 +121,57 @@ class QueryBuilderService:
 
 
 
-    def password_change_attempt(password, new_password):
+    # need to process (hash) old_password for input
+    def password_change_attempt(user_id, old_password, new_password):
+        # need to handle exceptions: no jwt, invalid jwt
+
+        check_if_passwords_match = '''
+            select password from users
+            where password = {old_password} and user_id = {user_id};
+        '''.format(old_password = old_password, user_id = user_id)
+        # need to handle: IncorrectPasswordException
+
+        update_password = '''
+            update users set password = {new_password}
+            where user_id = {user_id};
+        '''.format(new_password = PasswordHasherService(new_password).get(), user_id = user_id)
+
+        return [check_if_passwords_match, update_password]
         
+
+
+    def simple_search(search):
+        # need to check for empty/invalid search
+
+        query = '''
+            select post_id, post_title, post_body from posts
+            where post_title like '%{search}%'
+            or post_body like '%{search}%';
+        '''.format(search = search)
+
+        return [query]
+
+
+
+    # new password is not hashed yet
+    def consume_password_reset_attempt(_uuid, new_password):
+        check_if_session_exists = '''
+            select * from resets where session_id = {session_id};
+        '''.format(session_id = _uuid)
+        # need to handle exception: session does not exist
+
+        update_password = '''
+            update users set password = {password}
+            where user_id = (select user_id from resets where session_id = {session_id});
+        '''.format(password = PasswordHasherService(new_password).get(), session_id = _uuid)
+
+        consume_session = '''
+            delete from resets where session_id = {session_id};
+        '''.format(session_id = _uuid)
+
+        return [check_if_session_exists, update_password, consume_session]
+
+
+
+    def consume_verify_email_attempt(_uuid):
+        pass
