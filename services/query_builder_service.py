@@ -178,7 +178,6 @@ class QueryBuilderService:
         update_verification_status = '''
             update users set is_verified = 1;
         '''
-
         consume_session = '''
             delete from verifications where session_id = {session_id};
         '''.format(session_id = _uuid)

@@ -1,20 +1,22 @@
 from flask import Flask
 from flask import request
-from encode_decode import EncodeDecodeService
-# from query_builder import QueryBuilder
+
+from services.query_builder_service import QueryBuilderService
+from services.query_executor_service import QueryExecutorService
 
 app = Flask(__name__)
+
+# intercept jwt, request body json, url params
 
 @app.route('/api/posts', methods=['GET', 'POST'])
 def posts():
     if request.method == 'GET':
-        pass
-    else:
-        pass
+        offset = request.args.get('offset')
+        return offset
 #
+
+
 
 @app.route('/')
 def test():
-    data = EncodeDecodeService.to_b64_string('asd').encode('utf-8')
-    res = EncodeDecodeService.b64_to_string(data)
-    return res
+    return "test"
