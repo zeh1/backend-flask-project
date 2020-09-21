@@ -30,3 +30,15 @@ class InvalidSessionException(Exception):
     def __init__(self):
         super().__init__("Invalid session")
 
+class InvalidJwtException(Exception):
+    def __init__(self):
+        super().__init__("Invalid jwt")
+
+class UserNotVerifiedException(Exception):
+    def __init__(self):
+        super().__init__("User not verified")
+
+class SessionDoesNotExistException(Exception):
+    def __init__(self):
+        super().__init__("Session does not exist")
+
