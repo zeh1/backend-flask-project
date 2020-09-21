@@ -1,6 +1,6 @@
 import hmac
-from encode_decode_service import EncodeDecodeService
-from __secrets import SECRET
+from .encode_decode_service import EncodeDecodeService
+from .__secrets import SECRET
 
 
 
@@ -29,7 +29,7 @@ class SignatureCheckerService:
 
 class SignatureCheckerServiceV2:
     def check(jwt = None, secret = SECRET):
-        if jwt = None:
+        if jwt == None:
             return False
         else:
             array = jwt.split('.')

@@ -3,6 +3,7 @@ from flask import request
 
 from services.query_builder_service import QueryBuilderService as q
 from services.query_executor_service import QueryExecutorService as e
+from services.signature_checker_service import SignatureCheckerService as s
 
 app = Flask(__name__)
 
@@ -11,6 +12,9 @@ app = Flask(__name__)
 
 @app.route('/api/posts', methods=['GET', 'POST'])
 def posts():
+
+
+    
     if request.method == 'GET':
         offset = request.args.get('offset')
         queries = q.get_posts(offset) if offset else q.get_posts()
@@ -45,12 +49,27 @@ def posts():
 
         return res
 
+
+
     elif request.method == 'POST':
-        pass
+
+        if request.headers.get('Authorization') == None:
+            return "no jwt supplied"
+
+        token = request.headers.get('Authorization').split(' ')[1]
+        flag = True if s.check(token) else False
+        if flag == False:
+            return "invalid jwt"
+
+        d = request.get_json()
+        queries = q.insert_post(d["user_id"], d["post_title"], d["post_body"])
+        for query in queries:
+            e().execute(query)
+
+        return 'success'
 #
 
+'''
+eyJhbGciOiAiaHMyNTYiLCAidHlwIjogImp3dCJ9.eyJwYXlsb2FkIjogMH0=.NjQ3YjAwZTBhNDU3NDM3NGU4NTUxNjYyMTk4ZjEwMjA=
+'''
 
-
-@app.route('/')
-def test():
-    return "test"
