@@ -1,5 +1,5 @@
 import bcrypt
-from encode_decode_service import EncodeDecodeService
+from .encode_decode_service import EncodeDecodeService
 
 
 

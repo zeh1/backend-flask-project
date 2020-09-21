@@ -1,6 +1,6 @@
 import hmac, json, base64
-from encode_decode_service import EncodeDecodeService
-from __secrets import SECRET
+from .encode_decode_service import EncodeDecodeService
+from .__secrets import SECRET
 
 
 

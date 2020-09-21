@@ -4,6 +4,11 @@ from flask import request
 from services.query_builder_service import QueryBuilderService as q
 from services.query_executor_service import QueryExecutorService as e
 from services.signature_checker_service import SignatureCheckerService as s
+from services.jwt_deconstructor_service import JwtDeconstructorService as j
+from services.password_checker_service import PasswordCheckerService as c
+from services.jwt_fetcher_service import JwtFetcherService as f
+
+from services.__custom_exceptions import UserNotFoundException, PasswordIncorrectException
 
 app = Flask(__name__)
 
@@ -14,7 +19,7 @@ app = Flask(__name__)
 def posts():
 
 
-    
+
     if request.method == 'GET':
         offset = request.args.get('offset')
         queries = q.get_posts(offset) if offset else q.get_posts()
@@ -73,3 +78,78 @@ def posts():
 eyJhbGciOiAiaHMyNTYiLCAidHlwIjogImp3dCJ9.eyJwYXlsb2FkIjogMH0=.NjQ3YjAwZTBhNDU3NDM3NGU4NTUxNjYyMTk4ZjEwMjA=
 '''
 
+
+
+
+
+@app.route('/api/replies', methods=['GET', 'POST'])
+def replies():
+
+
+
+    if request.method == 'GET':
+        post_id = request.args.get('post_id')
+        flag = True if post_id else False
+
+        if flag:
+            queries = q.get_replies(post_id)
+            res = None
+            for query in queries:
+                res = e().execute(query)
+
+            def transform(row):
+                return {
+                    "reply_body": row[0],
+                    "username": row[1],
+                    "reply_date": row[2],
+                    "upvote_count": row[3],
+                    "downvote_count": row[4]
+                }
+
+            res = map(transform, res)
+            res = list(res)
+            res = {
+                "replies": res
+            }
+            return res
+
+        else:
+            return 'no id supplied'
+
+
+
+    elif request.method == 'POST':
+
+        if request.headers.get('Authorization') == None:
+            return "no jwt supplied"
+
+        token = request.headers.get('Authorization').split(' ')[1]
+        flag = True if s.check(token) else False
+        if flag == False:
+            return "invalid jwt"
+
+        # user_id = j(token).get()["user_id"]
+        user_id = request.get_json()["user_id"]
+
+        d = request.get_json()
+        queries = q.insert_post(d["post_id"], d["reply_body"], d["user_id"])
+        for query in queries:
+            # e().execute(query)
+            print(query)
+
+        return 'success'
+
+
+
+
+
+@app.route('/auth/login', methods=['POST'])
+def login():
+    username = request.get_json()["username"]
+    supplied_password = request.get_json()["password"]
+
+    try:
+        return f(username, supplied_password).get()
+    except Exception as e:
+        return str(e)
+#

@@ -96,5 +96,7 @@ for entry in queries:
     print(e().execute(entry))
 '''
 
-queries = q.get_posts()
-print( e().execute(queries[0]) )
+query = '''
+    select * from users where user_id = 100;
+'''
+print( len(e().execute(query)) )

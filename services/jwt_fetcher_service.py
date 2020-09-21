@@ -1,8 +1,8 @@
 from datetime import date
-from query_executor_service import QueryExecutorService
-import __custom_exceptions
-from password_checker_service import PasswordCheckerService
-from signer_service import SignerService
+from .query_executor_service import QueryExecutorService
+from .__custom_exceptions import UserNotFoundException, PasswordIncorrectException
+from .password_checker_service import PasswordCheckerService
+from .signer_service import SignerService
 
 
 
@@ -13,7 +13,7 @@ class JwtFetcherService:
         self.query = '''
             SELECT password, user_id, username, email, join_date, post_count
             FROM users
-            WHERE username = {username};
+            WHERE username = '{username}';
         '''.format(username = username)
         self.password = password
         self.username = username
@@ -25,14 +25,14 @@ class JwtFetcherService:
     def __attempt_fetch(self):
         res = self.connection.execute(self.query)
         if len(res) == 0:
-            raise __custom_exceptions.UserNotFoundException()
+            raise UserNotFoundException()
         else:
             return res
 
     def __check_pw(self, res):
         flag = PasswordCheckerService.check(self.password, res[0][0])
-        if flag == false:
-            raise __custom_exceptions.PasswordIncorrectException()
+        if flag == False:
+            raise PasswordIncorrectException()
         else:
             return res
 
