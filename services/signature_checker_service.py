@@ -22,3 +22,19 @@ class SignatureCheckerService:
         proper_sig = EncodeDecodeService.to_b64_string( hmac.new(secret, hmac_msg).hexdigest() )
         return supplied_sig == proper_sig
 #
+
+
+
+
+
+class SignatureCheckerServiceV2:
+    def check(jwt = None, secret = SECRET):
+        if jwt = None:
+            return False
+        else:
+            array = jwt.split('.')
+            hmac_msg = EncodeDecodeService.encode( array[0] + '.' + array[1] )
+            supplied_sig = array[2]
+            proper_sig = EncodeDecodeService.to_b64_string( hmac.new(secret, hmac_msg).hexdigest() )
+            return supplied_sig == proper_sig
+#

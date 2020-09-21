@@ -18,7 +18,7 @@ from services.query_executor_service import QueryExecutorService as q
 conn = q()
 
 query = '''
-    update test2 set id = 7 where id = 5;
+    delete from test2 where id = 6;
 '''
 
 print( conn.execute(query) )

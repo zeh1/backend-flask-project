@@ -44,16 +44,20 @@ create table replies (
 create_resets_table = '''
 create table resets (
     session_id text primary key,
-    email text not null unique
+    user_id integer,
+    FOREIGN KEY(user_id) REFERENCES users(user_id)
 );
 '''
 
 create_verifications_table = '''
 create table verifications (
     session_id text primary key,
-    email text not null unique
+    user_id integer,
+    FOREIGN KEY(user_id) REFERENCES users(user_id)
 );
 '''
+
+# email text not null unique
 
 queries = [
     create_users_table, 

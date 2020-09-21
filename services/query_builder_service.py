@@ -119,28 +119,13 @@ class QueryBuilderService:
         '''.format(email = email)
         # get session id from here, in order to send email
 
-        # originally i wanted this class to just return a single query
-        # for each request but it turned into spaghetti code when
-        # it turned out to be more complicated because of sql
-        # using multiple queries, and needing to pass data in between queries
-        # also there were inefficiencies in the sql data model
-        # for the future: prefer natural primary keys over generated ones
-        
-        # learning points:
-        # do not try to implement a query builder, think of another way
-        # prefer natural keys
-        # try using table joins?
-        # understand python upper directory imports...
-        # use 3rd party sql libs
-        # consider document db for easier implementation
-
         queries = [query1, query2, query3]
 
         return queries
 
 
 
-    def start_password_reset(self, email):
+    def password_reset_attempt(self, email):
         queries = None
         
         query1 = '''
@@ -208,10 +193,11 @@ class QueryBuilderService:
 
 
 
-    def consume_reset_password_attempt(self, uuid, new_pass):
+    def consume_password_reset_attempt(self, uuid, new_pass):
         # check if session exists, retrieve email from sessions db
         # proceed to change pw
 
+        password = PasswordHasherService(new_pass).get()
         query1 = '''
             update users set password = {password}
             where email = (
@@ -221,8 +207,9 @@ class QueryBuilderService:
         '''.format(password = password, uuid = uuid)
 
         query2 = '''
-
+            delete from resets where session_d = {uuid}
         '''
+        # check if operation was successful
         # may throw invalid session exception
 
 
