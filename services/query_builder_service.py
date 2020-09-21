@@ -8,20 +8,17 @@ class QueryBuilderService:
 
 
 
-    def get_posts(offset = None):
-        if offset != None:
-            query = '''
-                select * from posts
-                order by post_date asc
-                limit 15
-                offset {offset}
-            '''.format(offset = offset)
-        else:
-            query = '''
-                select * from posts
-                order by post_date asc
-                limit 15
-            '''
+    def get_posts(offset = 0):
+        query = '''
+            select distinct
+            posts.post_id, posts.post_title, posts.post_body, posts.post_date,
+            posts.upvote_count, posts.downvote_count, users.user_id, users.username
+            from users
+            inner join posts on posts.user_id = users.user_id
+            order by posts.post_date asc
+            limit 15
+            offset {offset}
+        '''.format(offset = offset)
         return [query]
 
 

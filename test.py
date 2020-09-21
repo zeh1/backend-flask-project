@@ -95,3 +95,6 @@ for entry in queries:
     # print(entry)
     print(e().execute(entry))
 '''
+
+queries = q.get_posts()
+print( e().execute(queries[0]) )
