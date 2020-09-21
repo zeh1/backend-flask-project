@@ -59,3 +59,37 @@ for entry in queries:
     e().execute(entry)
 '''
 
+'''
+queries = q.password_change_attempt_part_1(3)
+for entry in queries:
+    # print(entry)
+    print ( e().execute(entry) )
+'''
+
+'''
+queries = q.password_change_attempt_part_2(4, 'my new pass')
+for entry in queries:
+    # print(entry)
+    print ( e().execute(entry) )
+'''
+
+'''
+queries = q.simple_search('inserted post')
+for entry in queries:
+    print( e().execute(entry) )
+'''
+
+'''
+session = '888813a845f4475a9f0cfdd7ecfbe55f'
+new_pass = 'hi'
+queries = q.consume_password_reset_attempt(session, new_pass)
+for entry in queries:
+    # print(entry)
+    print( e().execute(entry) )
+'''
+
+session = '7508a72038764630aa1c238b4b732f25'
+queries = q.consume_verify_email_attempt(session)
+for entry in queries:
+    # print(entry)
+    print(e().execute(entry))

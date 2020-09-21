@@ -126,22 +126,29 @@ class QueryBuilderService:
 
 
 
-    # need to process (hash) old_password for input
-    def password_change_attempt(user_id, old_password, new_password):
+    def password_change_attempt_part_1(user_id):
         # need to handle exceptions: no jwt, invalid jwt
 
-        check_if_passwords_match = '''
-            select password from users
-            where password = '{old_password}' and user_id = {user_id};
-        '''.format(old_password = old_password, user_id = user_id)
-        # need to handle: IncorrectPasswordException
+        retrieve_password = '''
+            select password from users where user_id = {user_id};
+        '''.format(user_id = user_id)
+
+        return [retrieve_password]
+
+
+
+    # check for old_password match outside this class
+    # if match then call part 2 to update db with new pass
+    # need to handle: IncorrectPasswordException
+    # new_password is not yet hashed for input
+    def password_change_attempt_part_2(user_id, new_password):
 
         update_password = '''
             update users set password = '{new_password}'
             where user_id = {user_id};
         '''.format(new_password = PasswordHasherService(new_password).get(), user_id = user_id)
 
-        return [check_if_passwords_match, update_password]
+        return [update_password]
         
 
 
@@ -180,8 +187,10 @@ class QueryBuilderService:
 
     def consume_verify_email_attempt(_uuid):
         update_verification_status = '''
-            update users set is_verified = 1;
-        '''
+            update users set is_verified = 1
+            where user_id = 
+            (select user_id from verifications where session_id = '{session_id}');
+        '''.format(session_id = _uuid)
         consume_session = '''
             delete from verifications where session_id = '{session_id}';
         '''.format(session_id = _uuid)
