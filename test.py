@@ -1,22 +1,3 @@
-'''
-def a():
-    x = 1
-    def b():
-        y = 2
-        print('x: ' + f'{x}')
-        def c():
-            z = 3
-            print('y: ' + f'{y}')
-        return c
-    return b
-
-a()()()
-'''
-
-
-# TODO: add unit tests
-
-
 from services.query_builder_service import QueryBuilderService as q
 from services.query_executor_service import QueryExecutorService as e
 
@@ -96,7 +77,25 @@ for entry in queries:
     print(e().execute(entry))
 '''
 
-query = '''
-    select * from users where user_id = 100;
 '''
+query = 'select * from users where user_id = 100;'
 print( len(e().execute(query)) )
+'''
+
+
+
+
+
+'''
+src
+    lib/
+        config/
+        services/
+        exceptions/
+    tests/
+    server.py
+    start.bat
+    migrations.py
+    migrations_dummy_data.py
+    migrations_clear.py
+'''

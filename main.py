@@ -192,4 +192,4 @@ def reset():
 
 @app.route('/auth/change_pw', methods=['POST'])
 def change():
-    
+    pass
