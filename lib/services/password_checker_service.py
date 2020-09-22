@@ -7,7 +7,10 @@ from .encode_decode_service import EncodeDecodeService
 
 # This class is responsible for checking if passwords match
 
+# TODO: write unit tests, and documentation
+
 class PasswordCheckerService:
+    @staticmethod
     def check(password, stored_password):
         password = EncodeDecodeService.encode(password)
         stored_password = EncodeDecodeService.encode(stored_password)

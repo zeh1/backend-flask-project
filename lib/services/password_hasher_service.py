@@ -7,6 +7,8 @@ from .encode_decode_service import EncodeDecodeService
 
 # This class is responsible for generating a hash, given a password
 
+# TODO: write unit tests, and documentation
+
 class PasswordHasherService:
     # accepts a string
     def __init__(self, password = "TEST PASSWORD"):

@@ -1,4 +1,4 @@
-from query_executor_service import QueryExecutorService
+from lib.services.query_executor_service import QueryExecutorService
 import sqlite3
 
 delete_users_table = '''

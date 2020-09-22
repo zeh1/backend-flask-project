@@ -1,4 +1,4 @@
-set FLASK_APP=main.py
+set FLASK_APP=server.py
 
 set FLASK_DEBUG=1
 

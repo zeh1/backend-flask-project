@@ -1,12 +1,15 @@
 from datetime import date
 from .query_executor_service import QueryExecutorService
-from .__custom_exceptions import UserNotFoundException, PasswordIncorrectException
+from ..exceptions.custom_exceptions import UserNotFoundException, IncorrectPasswordException
 from .password_checker_service import PasswordCheckerService
-from .signer_service import SignerService
+from .jwt_signer_service import JwtSignerService
 
 
 
 
+
+# TODO: refactor class to seperate concerns more, and make it unit testable
+# TODO: write documentation
 
 class JwtFetcherService:
     def __init__(self, username, password):
@@ -32,7 +35,7 @@ class JwtFetcherService:
     def __check_pw(self, res):
         flag = PasswordCheckerService.check(self.password, res[0][0])
         if flag == False:
-            raise PasswordIncorrectException()
+            raise IncorrectPasswordException()
         else:
             return res
 

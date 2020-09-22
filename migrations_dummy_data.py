@@ -1,5 +1,7 @@
-from query_executor_service import QueryExecutorService
+from lib.services.query_executor_service import QueryExecutorService
 import sqlite3
+
+
 
 
 
@@ -26,6 +28,8 @@ emails = [
     "emailB@x.com",
     "emailC@x.com"
 ]
+
+
 
 
 
@@ -69,9 +73,13 @@ insert into verifications values
 
 
 
+
+
 queries = [
     populate_users, populate_posts, populate_replies, populate_resets, populate_verifications
 ]
+
+
 
 
 

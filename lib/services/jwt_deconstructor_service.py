@@ -1,20 +1,11 @@
 from .encode_decode_service import EncodeDecodeService
 import json
 
-
-
-
-
-TEST_JWT = 'eyJhbGciOiAiaHMyNTYiLCAidHlwIjogImp3dCJ9.eyJwYXlsb2FkIjogMH0=.NjQ3YjAwZTBhNDU3NDM3NGU4NTUxNjYyMTk4ZjEwMjA='
-
-
-
-
+# TODO: write documentation
 
 class JwtDeconstructorService:
 
-
-    def __init__(self, jwt = TEST_JWT):
+    def __init__(self, jwt):
         self.jwt = jwt
 
 

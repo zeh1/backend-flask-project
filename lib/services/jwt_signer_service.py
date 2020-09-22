@@ -1,6 +1,6 @@
 import hmac, json, base64
 from .encode_decode_service import EncodeDecodeService
-from .__secrets import SECRET
+from ..config.secrets import SECRET
 
 
 
@@ -16,7 +16,9 @@ TEST_PAYLOAD = {"payload": 0}
 
 # This class is responsible for returning a jwt, given a payload
 
-class SignerService:
+# TODO: write unit tests, and documentation
+
+class JwtSignerService:
     # input: payload is a dict
     def __init__(self, payload = TEST_PAYLOAD, header = HEADER, secret = SECRET):
         self.secret = secret

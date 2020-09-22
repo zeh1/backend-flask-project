@@ -1,13 +1,13 @@
 import uuid
 from .password_hasher_service import PasswordHasherService
 
-
-
+# TODO: write unit tests, and documentation
 
 class QueryBuilderService:
 
 
 
+    @staticmethod
     def get_posts(offset = 0):
         query = '''
             select distinct
@@ -23,6 +23,7 @@ class QueryBuilderService:
 
 
 
+    @staticmethod
     def insert_post(user_id, title, body):
         insert_post_query = '''
             insert into posts(post_title, post_body, user_id)
@@ -39,6 +40,7 @@ class QueryBuilderService:
 
 
 
+    @staticmethod
     def get_replies(post_id):
         query = '''
             select replies.reply_body, users.username, replies.reply_date, replies.upvote_count, replies.downvote_count
@@ -51,6 +53,7 @@ class QueryBuilderService:
 
 
 
+    @staticmethod
     def insert_reply(post_id, reply_body, user_id):
         query = '''
             insert into replies(reply_body, post_id, user_id)
@@ -62,6 +65,7 @@ class QueryBuilderService:
 
 
     # requires a processed (hashed) password
+    @staticmethod
     def login_attempt(username):
 
         try_to_retrieve_user_info = '''
@@ -79,6 +83,7 @@ class QueryBuilderService:
 
 
     # takes in a raw (unhashed) password
+    @staticmethod
     def signup_attempt(email, username, password):
         try_to_insert_user = '''
             insert into users(username, email, password)
@@ -102,6 +107,7 @@ class QueryBuilderService:
 
 
 
+    @staticmethod
     def password_reset_attempt(email):
         check_if_user_exists = '''
             select email from users where email = '{email}';
@@ -123,6 +129,7 @@ class QueryBuilderService:
 
 
 
+    @staticmethod
     def password_change_attempt_part_1(user_id):
         # need to handle exceptions: no jwt, invalid jwt
 
@@ -138,6 +145,7 @@ class QueryBuilderService:
     # if match then call part 2 to update db with new pass
     # need to handle: IncorrectPasswordException
     # new_password is not yet hashed for input
+    @staticmethod
     def password_change_attempt_part_2(user_id, new_password):
 
         update_password = '''
@@ -149,6 +157,7 @@ class QueryBuilderService:
         
 
 
+    @staticmethod
     def simple_search(search):
         # need to check for empty/invalid search
 
@@ -163,6 +172,7 @@ class QueryBuilderService:
 
 
     # new password is not hashed yet
+    @staticmethod
     def consume_password_reset_attempt(_uuid, new_password):
         check_if_session_exists = '''
             select * from resets where session_id = '{session_id}';
@@ -182,6 +192,7 @@ class QueryBuilderService:
 
 
 
+    @staticmethod
     def consume_verify_email_attempt(_uuid):
         update_verification_status = '''
             update users set is_verified = 1

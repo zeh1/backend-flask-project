@@ -1,12 +1,12 @@
 from flask import Flask
 from flask import request
 
-from services.query_builder_service import QueryBuilderService as q
-from services.query_executor_service import QueryExecutorService as e
-from services.signature_checker_service import SignatureCheckerService as s
-from services.jwt_deconstructor_service import JwtDeconstructorService as j
-from services.password_checker_service import PasswordCheckerService as c
-from services.jwt_fetcher_service import JwtFetcherService as f
+from lib.services.query_builder_service import QueryBuilderService as q
+from lib.services.query_executor_service import QueryExecutorService as e
+from lib.services.jwt_checker_service import JwtCheckerService as s
+from lib.services.jwt_deconstructor_service import JwtDeconstructorService as j
+from lib.services.password_checker_service import PasswordCheckerService as c
+from lib.services.jwt_fetcher_service import JwtFetcherService as f
 
 # from services.__custom_exceptions import UserNotFoundException, PasswordIncorrectException
 
@@ -67,7 +67,8 @@ def posts():
             return "invalid jwt"
 
         d = request.get_json()
-        queries = q.insert_post(d["user_id"], d["post_title"], d["post_body"])
+
+        queries = q().insert_post(d["user_id"], d["post_title"], d["post_body"])
         for query in queries:
             e().execute(query)
 

@@ -2,15 +2,14 @@ import sqlite3
 
 
 
-
-
 URL = "Z:\sqlite\db\sqlitedb"
 
 
 
-
-
 # This class is responsible for executing SQL queries
+
+# TODO: write unit tests, and documentation
+# TODO: refactor URL to config folder
 
 class QueryExecutorService:
     def __init__(self, url = URL):
