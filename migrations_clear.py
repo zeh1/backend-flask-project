@@ -13,20 +13,10 @@ delete_replies_table = '''
     drop table replies;
 '''
 
-delete_resets_table = '''
-    drop table resets;
-'''
-
-delete_verifications_table = '''
-    drop table verifications;
-'''
-
 queries = [
     delete_users_table, 
     delete_posts_table,
-    delete_replies_table,
-    delete_resets_table,
-    delete_verifications_table
+    delete_replies_table
 ]
 
 for query in queries:

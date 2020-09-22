@@ -8,8 +8,7 @@ create table users (
     email varchar(320) not null unique,
     password varchar(16) not null,
     join_date date default current_date,
-    post_count integer default 0,
-    is_verified integer default 0
+    post_count integer default 0
 );
 '''
 
@@ -40,30 +39,10 @@ create table replies (
 );
 '''
 
-create_resets_table = '''
-create table resets (
-    session_id text primary key,
-    user_id integer not null unique,
-    FOREIGN KEY(user_id) REFERENCES users(user_id)
-);
-'''
-# user_id integer
-
-create_verifications_table = '''
-create table verifications (
-    session_id text primary key,
-    user_id integer not null unique,
-    FOREIGN KEY(user_id) REFERENCES users(user_id)
-);
-'''
-# user_id integer
-
 queries = [
     create_users_table, 
     create_posts_table,
-    create_replies_table,
-    create_resets_table,
-    create_verifications_table
+    create_replies_table
 ]
 
 for query in queries:

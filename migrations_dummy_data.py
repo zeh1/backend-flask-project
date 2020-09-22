@@ -34,7 +34,7 @@ emails = [
 
 
 populate_users = '''
-insert into users(username, email, password, is_verified)
+insert into users(username, email, password)
 values
 ( "user1", "emailA@x.com", "$2b$12$1pxAbfgWRMnmS7UqzTWbYOjJfcUOj7gpS82HKpGc2X70ZVskGIJt.", 1 ),
 ( "user2", "emailB@x.com", "$2b$12$wwqTtaFjBPZXaSOuH.ccA.i9eQ5STNPmjMPTZUfRVTDWOGxon7bPW", 1 ),
@@ -57,26 +57,12 @@ values
 ("reply3", 2, 1)
 '''
 
-populate_resets = '''
-insert into resets values
-("e0a010d5aebd4441a520b35b08cb2c17", 1),
-("2241af0947474b8aa062a24563542a46", 2),
-("7e9365c6c9ce46f98e92441094362222", 3)
-'''
-
-populate_verifications = '''
-insert into verifications values
-("e0a010d5aebd4441a520b35b08cb2c17", 1),
-("2241af0947474b8aa062a24563542a46", 2),
-("7e9365c6c9ce46f98e92441094362222", 3)
-'''
-
 
 
 
 
 queries = [
-    populate_users, populate_posts, populate_replies, populate_resets, populate_verifications
+    populate_users, populate_posts, populate_replies
 ]
 
 
