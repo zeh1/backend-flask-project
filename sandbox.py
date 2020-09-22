@@ -1,5 +1,5 @@
-from lib.services.query_builder_service import QueryBuilderService as q
-from lib.services.query_executor_service import QueryExecutorService as e
+# from lib.services.query_builder_service import QueryBuilderService as q
+# from lib.services.query_executor_service import QueryExecutorService as e
 
 '''
 queries = q.get_posts(1)
@@ -82,6 +82,3 @@ query = 'select * from users where user_id = 100;'
 print( len(e().execute(query)) )
 '''
 
-from lib.config.secrets import SECRET as s
-
-print(s)
