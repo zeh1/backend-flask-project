@@ -81,5 +81,3 @@ for entry in queries:
 query = 'select * from users where user_id = 100;'
 print( len(e().execute(query)) )
 '''
-
-print( isinstance(5, int) )

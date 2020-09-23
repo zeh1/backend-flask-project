@@ -1,6 +1,8 @@
 from flask import Flask
 from flask import request
 from flask import make_response
+from flask import redirect, url_for
+import sqlite3
 
 from lib.services.query_builder_service import QueryBuilderService
 from lib.services.query_executor_service import QueryExecutorService
@@ -11,29 +13,18 @@ from lib.exceptions.custom_exceptions import UserNotFoundException, IncorrectPas
 
 app = Flask(__name__)
 
-'''
-SAMPLE VALID TOKEN:
-eyJhbGciOiAiaHMyNTYiLCAidHlwIjogImp3dCJ9.eyJwYXlsb2FkIjogMH0=.NjQ3YjAwZTBhNDU3NDM3NGU4NTUxNjYyMTk4ZjEwMjA=
-
-no jwt, invalid jwt, user not found, incorrect password/username, user already exists
-
-url params: request.args.get('key')
-token = request.headers.get('Authorization').split(' ')[1]
-request.get_json()["user_id"]
-if request.method == 'GET'
-
-400 bad request due to invalid syntax
-401 unauthorized
-403 forbidden
-404 not found
-'''
-
 @app.route('/api/posts', methods=['GET', 'POST'])
 def posts():
 
     if request.method == 'GET':
 
         offset = request.args.get('offset')
+        
+        try:
+            offset = int(offset)
+        except ValueError:
+            return 'Invalid offset', 400
+        
         queries = QueryBuilderService().get_posts(offset) if offset else QueryBuilderService().get_posts()
         
         query_result = None
@@ -200,6 +191,7 @@ def login():
             resp.headers['Authorization'] = header
             return resp
 
+        # move these except clauses to the outer try block instead?
         except UserNotFoundException as e:
             return str(e), 404
         except IncorrectPasswordException as e:
@@ -219,14 +211,86 @@ def login():
 
 @app.route('/auth/signup', methods=['POST'])
 def signup():
-    username = request.get_json()["username"]
-    email = request.get_json()["email"]
-    password = request.get_json()["password"]
 
-    queries = QueryBuilderService().signup_attempt(email, username, password)
+    try:
+        req_body = request.get_json()
+        username = req_body["username"]
+        email = req_body["email"]
+        password = req_body["password"]
 
+        if not isinstance(username, str) or not isinstance(email, str) or not isinstance(password, str):
+            return 'Invalid key values', 400
+
+        queries = QueryBuilderService().signup_attempt(email, username, password)
+
+        try:
+            for query in queries:
+                QueryExecutorService().execute(query)
+        except sqlite3.IntegrityError:
+            return "User already exists", 403
+            
+        return redirect(url_for('home'))
+
+    except KeyError:
+        return 'Insufficient keys provided', 400
+
+    # maybe wrap whole request in this exception?
+    except Exception as e:
+        return str(e), 500
+    #
+#
+
+
+
+
+
+@app.route('/api/search', methods=['GET'])
+def search():
+    search = request.args.get('search')
+    search = str(search)
+    queries = QueryBuilderService().simple_search(search)
+    query_result = None
     for query in queries:
-        print(query)
+        query_result = QueryExecutorService().execute(query)
+    def transform(row):
+        return {
+            "post_id": row[0],
+            "post_title": row[1],
+            "post_body": row[2]
+        }
+    d = map(transform, query_result)
+    l = list(d)
+    return {
+        "search_results": l
+    }
+#
 
+
+
+
+
+@app.route('/', methods=['GET'])
+def home():
     return "hi"
 #
+
+
+
+
+
+'''
+url params: request.args.get('key')
+token = request.headers.get('Authorization').split(' ')[1]
+request.get_json()["user_id"]
+if request.method == 'GET'
+resp = make_response(); resp.headers['key'] = value
+
+400 bad request due to invalid syntax
+401 unauthorized
+403 forbidden
+404 not found
+
+import urllib.parse
+encoded = urllib.parse.quote('asd asd asd')
+decoded = urllib.parse.unquote(encoded)
+'''
