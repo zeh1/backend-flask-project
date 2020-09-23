@@ -1,11 +1,13 @@
 from flask import Flask
 from flask import request
+from flask import make_response
 
 from lib.services.query_builder_service import QueryBuilderService
 from lib.services.query_executor_service import QueryExecutorService
 from lib.services.jwt_checker_service import JwtCheckerService
 from lib.services.jwt_deconstructor_service import JwtDeconstructorService
 from lib.services.jwt_fetcher_service import JwtFetcherService
+from lib.exceptions.custom_exceptions import UserNotFoundException, IncorrectPasswordException
 
 app = Flask(__name__)
 
@@ -74,11 +76,10 @@ def posts():
         #
 
         try:
-            resp_body = request.get_json()
+            req_body = request.get_json()
             user_id = JwtDeconstructorService(token).get()["user_id"]
-            # user_id = resp_body["user_id"]
-            post_title = resp_body["post_title"]
-            post_body = resp_body["post_body"]
+            post_title = req_body["post_title"]
+            post_body = req_body["post_body"]
 
             if not isinstance(user_id, int) or not isinstance(post_title, str) or not isinstance(post_body, str):
                 return 'Invalid key values', 400
@@ -149,10 +150,9 @@ def replies():
 
 
         try:
-            resp_body = request.get_json()
-            post_id = resp_body["post_id"]
-            reply_body = resp_body["reply_body"]
-            # user_id = resp_body["user_id"]
+            req_body = request.get_json()
+            post_id = req_body["post_id"]
+            reply_body = req_body["reply_body"]
             user_id = JwtDeconstructorService(token).get()["user_id"]
 
             if not isinstance(post_id, int) or not isinstance(reply_body, str) or not isinstance(user_id, int):
@@ -184,13 +184,33 @@ def replies():
 
 @app.route('/auth/login', methods=['POST'])
 def login():
-    username = request.get_json()["username"]
-    supplied_password = request.get_json()["password"]
 
     try:
-        return JwtFetcherService(username, supplied_password).get()
-    except Exception as e:
-        return str(e)
+        req_body = request.get_json()
+        username = req_body["username"]
+        supplied_password = req_body["password"]
+        
+        if not isinstance(username, str) or not isinstance(supplied_password, str):
+            return 'Invalid key values', 400
+
+        try:
+            jwt = JwtFetcherService(username, supplied_password).get()
+            header = 'Bearer ' + jwt
+            resp = make_response()
+            resp.headers['Authorization'] = header
+            return resp
+
+        except UserNotFoundException as e:
+            return str(e), 404
+        except IncorrectPasswordException as e:
+            return str(e), 401
+
+    except KeyError:
+        return 'Insufficient keys provided', 400
+    
+    # maybe wrap whole request in this exception?
+    except Exception:
+        return 'Unknown error, maybe check http request formatting', 400
 #
 
 

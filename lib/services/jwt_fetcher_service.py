@@ -52,5 +52,5 @@ class JwtFetcherService:
         return payload
 
     def __gen_jwt(self, payload):
-        return SignerService(payload).get()
+        return JwtSignerService(payload).get()
 #
