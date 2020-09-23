@@ -75,8 +75,8 @@ def posts():
 
         try:
             resp_body = request.get_json()
-            # user_id = JwtDeconstructorService(token).get()["user_id"]
-            user_id = resp_body["user_id"]
+            user_id = JwtDeconstructorService(token).get()["user_id"]
+            # user_id = resp_body["user_id"]
             post_title = resp_body["post_title"]
             post_body = resp_body["post_body"]
 
@@ -91,6 +91,7 @@ def posts():
         except KeyError:
             return 'Insufficient keys provided', 400
 
+        # maybe wrap whole request in this exception?
         except Exception:
             return 'Unknown error, maybe check http request formatting', 400
 #
@@ -151,17 +152,31 @@ def replies():
             resp_body = request.get_json()
             post_id = resp_body["post_id"]
             reply_body = resp_body["reply_body"]
-            user_id = resp_body["user_id"]
-            # user_id = JwtDeconstructorService(token).get()["user_id"]
+            # user_id = resp_body["user_id"]
+            user_id = JwtDeconstructorService(token).get()["user_id"]
 
-        query = f'select post_id from posts where post_id = {resp_body["post_id"]}'
+            if not isinstance(post_id, int) or not isinstance(reply_body, str) or not isinstance(user_id, int):
+                return 'Invalid key values', 400
+            #
 
-        resp_body = request.get_json()
-        queries = QueryBuilderService().insert_reply(resp_body["post_id"], resp_body["reply_body"], user_id)
-        for query in queries:
-            QueryExecutorService().execute(query)
-        #
-        return 'Success', 200
+            query = f"select post_id from posts where post_id = {post_id}"
+            query_result = QueryExecutorService().execute(query)
+            if len(query_result) == 0:
+                return 'Invalid post id', 400
+            #
+
+            queries = QueryBuilderService().insert_reply(post_id, reply_body, user_id)
+            for query in queries:
+                QueryExecutorService().execute(query)
+            #
+            return 'Success', 200
+
+        except KeyError:
+            return 'Insufficient keys provided', 400
+
+        # maybe wrap whole request in this exception?
+        except Exception:
+            return 'Unknown error, maybe check http request formatting', 400
 
 
 
