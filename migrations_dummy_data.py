@@ -36,9 +36,9 @@ emails = [
 populate_users = '''
 insert into users(username, email, password)
 values
-( "user1", "emailA@x.com", "$2b$12$1pxAbfgWRMnmS7UqzTWbYOjJfcUOj7gpS82HKpGc2X70ZVskGIJt.", 1 ),
-( "user2", "emailB@x.com", "$2b$12$wwqTtaFjBPZXaSOuH.ccA.i9eQ5STNPmjMPTZUfRVTDWOGxon7bPW", 1 ),
-( "user3", "emailC@x.com", "$2b$12$Vr1Kca/SGH2XdZIrLWH18ez5/xj1M94GxPAkFaV9NLujUrFCfOQ/O", 1 )
+( "user1", "emailA@x.com", "$2b$12$1pxAbfgWRMnmS7UqzTWbYOjJfcUOj7gpS82HKpGc2X70ZVskGIJt."),
+( "user2", "emailB@x.com", "$2b$12$wwqTtaFjBPZXaSOuH.ccA.i9eQ5STNPmjMPTZUfRVTDWOGxon7bPW"),
+( "user3", "emailC@x.com", "$2b$12$Vr1Kca/SGH2XdZIrLWH18ez5/xj1M94GxPAkFaV9NLujUrFCfOQ/O")
 '''
 
 populate_posts = '''

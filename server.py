@@ -1,33 +1,43 @@
 from flask import Flask
 from flask import request
 
-from lib.services.query_builder_service import QueryBuilderService as q
-from lib.services.query_executor_service import QueryExecutorService as e
-from lib.services.jwt_checker_service import JwtCheckerService as s
-from lib.services.jwt_deconstructor_service import JwtDeconstructorService as j
-from lib.services.password_checker_service import PasswordCheckerService as c
-from lib.services.jwt_fetcher_service import JwtFetcherService as f
-
-# from services.__custom_exceptions import UserNotFoundException, PasswordIncorrectException
+from lib.services.query_builder_service import QueryBuilderService
+from lib.services.query_executor_service import QueryExecutorService
+from lib.services.jwt_checker_service import JwtCheckerService
+from lib.services.jwt_deconstructor_service import JwtDeconstructorService
+from lib.services.jwt_fetcher_service import JwtFetcherService
 
 app = Flask(__name__)
 
-# intercept jwt, request body json, url params
-# perform jwt checking here
+'''
+SAMPLE VALID TOKEN:
+eyJhbGciOiAiaHMyNTYiLCAidHlwIjogImp3dCJ9.eyJwYXlsb2FkIjogMH0=.NjQ3YjAwZTBhNDU3NDM3NGU4NTUxNjYyMTk4ZjEwMjA=
+
+no jwt, invalid jwt, user not found, incorrect password/username, user already exists
+
+url params: request.args.get('key')
+token = request.headers.get('Authorization').split(' ')[1]
+request.get_json()["user_id"]
+if request.method == 'GET'
+
+400 bad request due to invalid syntax
+401 unauthorized
+403 forbidden
+404 not found
+'''
 
 @app.route('/api/posts', methods=['GET', 'POST'])
 def posts():
 
-
-
     if request.method == 'GET':
+
         offset = request.args.get('offset')
-        queries = q.get_posts(offset) if offset else q.get_posts()
+        queries = QueryBuilderService().get_posts(offset) if offset else QueryBuilderService().get_posts()
         
-        res = None
+        query_result = None
         for query in queries:
-            res = e().execute(query)
-        # res is a list of tuples/rows
+            query_result = QueryExecutorService().execute(query)
+        # res is a list of tuples (database rows)
         
         def transform(row):
             return {
@@ -41,43 +51,49 @@ def posts():
                 "username": row[7]
             }
         
-        # map each tuple/row to a dict
-        res = map(transform, res)
+        # map each tuple to a dict
+        dictionaries = map(transform, query_result)
         
-        # res is a list of dicts
-        res = list(res)
+        list_of_dicts = list(dictionaries)
         
-        # res is now json
-        res = {
-            "posts": res
+        # make json response
+        return {
+            "posts": list_of_dicts
         }
-
-        return res
-
-
 
     elif request.method == 'POST':
 
         if request.headers.get('Authorization') == None:
-            return "no jwt supplied"
+            return "No JWT supplied", 401
+        #
 
         token = request.headers.get('Authorization').split(' ')[1]
-        flag = True if s.check(token) else False
-        if flag == False:
-            return "invalid jwt"
+        jwt_is_valid = True if JwtCheckerService().check(token) else False
+        if jwt_is_valid == False:
+            return "Invalid JWT", 401
+        #
 
-        d = request.get_json()
+        try:
+            resp_body = request.get_json()
+            # user_id = JwtDeconstructorService(token).get()["user_id"]
+            user_id = resp_body["user_id"]
+            post_title = resp_body["post_title"]
+            post_body = resp_body["post_body"]
 
-        queries = q().insert_post(d["user_id"], d["post_title"], d["post_body"])
-        for query in queries:
-            e().execute(query)
+            if not isinstance(user_id, int) or not isinstance(post_title, str) or not isinstance(post_body, str):
+                return 'Invalid key values', 400
 
-        return 'success'
+            queries = QueryBuilderService().insert_post(user_id, post_title, post_body)
+            for query in queries:
+                QueryExecutorService().execute(query)
+            return 'Success', 200
+
+        except KeyError:
+            return 'Insufficient keys provided', 400
+
+        except Exception:
+            return 'Unknown error, maybe check http request formatting', 400
 #
-
-'''
-eyJhbGciOiAiaHMyNTYiLCAidHlwIjogImp3dCJ9.eyJwYXlsb2FkIjogMH0=.NjQ3YjAwZTBhNDU3NDM3NGU4NTUxNjYyMTk4ZjEwMjA=
-'''
 
 
 
@@ -86,17 +102,22 @@ eyJhbGciOiAiaHMyNTYiLCAidHlwIjogImp3dCJ9.eyJwYXlsb2FkIjogMH0=.NjQ3YjAwZTBhNDU3ND
 @app.route('/api/replies', methods=['GET', 'POST'])
 def replies():
 
-
-
     if request.method == 'GET':
-        post_id = request.args.get('post_id')
-        flag = True if post_id else False
 
-        if flag:
-            queries = q.get_replies(post_id)
-            res = None
+        post_id = request.args.get('post_id')
+        has_post_id = True if post_id else False
+
+        if not has_post_id:
+
+            return 'No id supplied', 400
+
+        else:
+
+            queries = QueryBuilderService().get_replies(post_id)
+
+            query_result = None
             for query in queries:
-                res = e().execute(query)
+                query_result = QueryExecutorService().execute(query)
 
             def transform(row):
                 return {
@@ -107,38 +128,40 @@ def replies():
                     "downvote_count": row[4]
                 }
 
-            res = map(transform, res)
-            res = list(res)
-            res = {
-                "replies": res
+            dictionaries = map(transform, query_result)
+            list_of_dicts = list(dictionaries)
+            return {
+                "replies": list_of_dicts
             }
-            return res
-
-        else:
-            return 'no id supplied'
-
-
 
     elif request.method == 'POST':
 
         if request.headers.get('Authorization') == None:
-            return "no jwt supplied"
+            return "No JWT supplied", 401
+        #
 
         token = request.headers.get('Authorization').split(' ')[1]
-        flag = True if s.check(token) else False
-        if flag == False:
-            return "invalid jwt"
+        jwt_is_valid = True if JwtCheckerService().check(token) else False
+        if jwt_is_valid == False:
+            return "Invalid JWT", 401
+        #
 
-        # user_id = j(token).get()["user_id"]
-        user_id = request.get_json()["user_id"]
 
-        d = request.get_json()
-        queries = q.insert_post(d["post_id"], d["reply_body"], d["user_id"])
+        try:
+            resp_body = request.get_json()
+            post_id = resp_body["post_id"]
+            reply_body = resp_body["reply_body"]
+            user_id = resp_body["user_id"]
+            # user_id = JwtDeconstructorService(token).get()["user_id"]
+
+        query = f'select post_id from posts where post_id = {resp_body["post_id"]}'
+
+        resp_body = request.get_json()
+        queries = QueryBuilderService().insert_reply(resp_body["post_id"], resp_body["reply_body"], user_id)
         for query in queries:
-            # e().execute(query)
-            print(query)
-
-        return 'success'
+            QueryExecutorService().execute(query)
+        #
+        return 'Success', 200
 
 
 
@@ -150,7 +173,7 @@ def login():
     supplied_password = request.get_json()["password"]
 
     try:
-        return f(username, supplied_password).get()
+        return JwtFetcherService(username, supplied_password).get()
     except Exception as e:
         return str(e)
 #
@@ -165,32 +188,10 @@ def signup():
     email = request.get_json()["email"]
     password = request.get_json()["password"]
 
-    queries = q.signup_attempt(email, username, password)
+    queries = QueryBuilderService().signup_attempt(email, username, password)
 
     for query in queries:
         print(query)
 
-    return "hi"
-# TODO: refactor, and add error handling
-
-
-
-
-
-@app.route('/auth/reset_pw', methods=['POST'])
-def reset():
-    email = request.get_json()["email"]
-    queries = q.password_reset_attempt(email)
-    for query in queries:
-        print(query)
-    
     return "hi"
 #
-
-
-
-
-
-@app.route('/auth/change_pw', methods=['POST'])
-def change():
-    pass

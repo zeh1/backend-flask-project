@@ -23,7 +23,6 @@ class QueryBuilderService:
 
 
 
-    # need to handle exceptions: no jwt (None), invalid jwt
     @staticmethod
     def insert_post(user_id, title, body):
         insert_post_query = '''
@@ -53,18 +52,16 @@ class QueryBuilderService:
 
 
 
-    # need to handle exceptions: no jwt, invalid jwt
     @staticmethod
     def insert_reply(post_id, reply_body, user_id):
         query = '''
             insert into replies(reply_body, post_id, user_id)
-            values('{reply_body}', '{post_id}', {user_id});
+            values('{reply_body}', {post_id}, {user_id});
         '''.format(reply_body = reply_body, post_id = post_id, user_id = user_id)
         return [query]
 
 
 
-    # need to handle exceptions:, UserNotFoundException, IncorrectCredentialsException
     @staticmethod
     def login_attempt(username):
         try_to_retrieve_user_info = '''
@@ -77,7 +74,6 @@ class QueryBuilderService:
 
 
     # takes in a raw (unhashed) password
-    # need to handle exception: UserAlreadyExistsException
     @staticmethod
     def signup_attempt(email, username, password):
         try_to_insert_user = '''
@@ -88,7 +84,6 @@ class QueryBuilderService:
 
 
 
-    # need to check for empty (invalid) search on the frontend
     @staticmethod
     def simple_search(search):
         query = '''
