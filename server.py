@@ -4,6 +4,8 @@ from flask import make_response
 from flask import redirect, url_for
 import sqlite3
 
+from flask_cors import CORS
+
 from lib.services.query_builder_service import QueryBuilderService
 from lib.services.query_executor_service import QueryExecutorService
 from lib.services.jwt_checker_service import JwtCheckerService
@@ -12,6 +14,7 @@ from lib.services.jwt_fetcher_service import JwtFetcherService
 from lib.exceptions.custom_exceptions import UserNotFoundException, IncorrectPasswordException
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/api/posts', methods=['GET', 'POST'])
 def posts():
@@ -19,11 +22,13 @@ def posts():
     if request.method == 'GET':
 
         offset = request.args.get('offset')
-        
+
         try:
             offset = int(offset)
         except ValueError:
             return 'Invalid offset', 400
+        except TypeError:
+            pass
         
         queries = QueryBuilderService().get_posts(offset) if offset else QueryBuilderService().get_posts()
         
