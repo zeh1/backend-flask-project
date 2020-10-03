@@ -1,1 +1,13 @@
 sandbox.py
+
+__pycache__/
+
+tests/__pycache__/
+
+lib/__pycache__
+
+.pytest_cache/
+
+lib/services/__pycache__
+lib/exceptions/__pycache__
+lib/config/__pycache__
