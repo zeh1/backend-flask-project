@@ -1,7 +1,9 @@
 from .encode_decode_service import EncodeDecodeService
 import json
 
-# TODO: write documentation
+'''
+This class is responsible for retrieving the payload from a JWT as a dict
+'''
 
 class JwtDeconstructorService:
 
@@ -11,7 +13,7 @@ class JwtDeconstructorService:
 
 
     def get(self):
-        return json.loads( self.__parse() )
+        return json.loads( self.__parse() ) # Parses string into a dict
 
 
 
@@ -25,5 +27,5 @@ class JwtDeconstructorService:
         
         res = map(transform, array)
 
-        return list(res)[1]
+        return list(res)[1] # Returns a string
 #

@@ -2,7 +2,9 @@ import hmac
 from .encode_decode_service import EncodeDecodeService
 from ..config.secrets import SECRET
 
-# TODO: write documentation
+'''
+This class is responsible for checking if a JWT was tampered with
+'''
 
 class JwtCheckerService:
     @staticmethod

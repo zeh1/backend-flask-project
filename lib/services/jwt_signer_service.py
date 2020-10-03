@@ -11,12 +11,10 @@ HEADER = {"alg": "hs256", "typ": "jwt"}
 TEST_PAYLOAD = {"payload": 0}
 
 
-
-
-
-# This class is responsible for returning a jwt, given a payload
-
-# TODO: write unit tests, and documentation
+'''
+This class is responsible for returning a jwt, given a payload.
+The jwt returned is a string.
+'''
 
 class JwtSignerService:
     # input: payload is a dict

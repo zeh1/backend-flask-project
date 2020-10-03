@@ -13,3 +13,4 @@ def test_jwt_deconstructor_service_works():
     res1 = j.JwtDeconstructorService(TEST_JWT).get()
     res2 = TEST_PAYLOAD
     assert res1 == res2
+

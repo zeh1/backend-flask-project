@@ -8,8 +8,13 @@ from .jwt_signer_service import JwtSignerService
 
 
 
-# TODO: refactor class to seperate concerns more, and make it unit testable
-# TODO: write documentation
+# TODO: refactor class to seperate concerns more
+
+'''
+This class is responsible for fetching a JWT given a username and password.
+It checks the credentials against the DB and returns a JWT.
+If the password is incorrect, or the user is not found, it may throw an exception.
+'''
 
 class JwtFetcherService:
     def __init__(self, username, password):

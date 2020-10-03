@@ -1,6 +1,11 @@
 import base64
 
-# TODO: write unit tests, and documentation
+'''
+This class is responsible for:
+
+utf-8 encoding and decoding
+base64 url encoding and decoding
+'''
 
 class EncodeDecodeService:
     
