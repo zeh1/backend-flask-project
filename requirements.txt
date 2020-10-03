@@ -21,3 +21,5 @@ six==1.15.0
 toml==0.10.1
 Werkzeug==1.0.1
 zipp==3.2.0
+Flask-Limiter==1.4
+limits==1.5.1

@@ -6,6 +6,9 @@ import sqlite3
 
 from flask_cors import CORS
 
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+
 from lib.services.query_builder_service import QueryBuilderService
 from lib.services.query_executor_service import QueryExecutorService
 from lib.services.jwt_checker_service import JwtCheckerService
@@ -15,6 +18,8 @@ from lib.exceptions.custom_exceptions import UserNotFoundException, IncorrectPas
 
 app = Flask(__name__)
 CORS(app)
+
+limiter = Limiter(app, key_func = get_remote_address, default_limits=["500 per day", "100 per hour"])
 
 @app.route('/api/posts', methods=['GET', 'POST'])
 def posts():
