@@ -1,0 +1,13 @@
+This is a backend meant to be used with a SPA like react
+
+Users can sign up, log in, post, reply, get posts, get replies
+
+Run tests: ./tests/run_tests.sh
+Start server: ./start_server.sh
+
+Download the necessary packages:
+>> virtualenv backend_flask_proj
+>> source backend_flask_proj/scripts/activate
+>> pip install -r requirements.txt
+
+Please use postman to query the api, there is no frontend implementation at this point

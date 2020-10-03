@@ -21,6 +21,12 @@ CORS(app)
 
 limiter = Limiter(app, key_func = get_remote_address, default_limits=["500 per day", "100 per hour"])
 
+
+
+
+
+# TODO: refactor server.py to make easier to read
+
 @app.route('/api/posts', methods=['GET', 'POST'])
 def posts():
 
@@ -279,16 +285,10 @@ def search():
 
 
 
-@app.route('/', methods=['GET'])
-def home():
-    return "hi"
-#
-
-
-
-
-
 '''
+
+REFERENCE:
+
 url params: request.args.get('key')
 token = request.headers.get('Authorization').split(' ')[1]
 request.get_json()["user_id"]
@@ -303,4 +303,5 @@ resp = make_response(); resp.headers['key'] = value
 import urllib.parse
 encoded = urllib.parse.quote('asd asd asd')
 decoded = urllib.parse.unquote(encoded)
+
 '''
