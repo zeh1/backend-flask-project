@@ -2,12 +2,10 @@ import bcrypt
 from .encode_decode_service import EncodeDecodeService
 
 
-
-
-
-# This class is responsible for checking if passwords match
-
-# TODO: write unit tests, and documentation
+'''
+This class is responsible for checking if two passwords match.
+The first password is a raw string password and the other is fetched from the DB
+'''
 
 class PasswordCheckerService:
     @staticmethod
